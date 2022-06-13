@@ -3,14 +3,9 @@ package com.mctschess.gui.panels;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.TransferHandler;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
@@ -22,10 +17,6 @@ import java.awt.event.MouseEvent;
 import java.beans.IndexedPropertyChangeEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
 import java.awt.event.MouseAdapter;
 
 public class BoardPanel extends JPanel {
@@ -145,13 +136,6 @@ public class BoardPanel extends JPanel {
 
 	private void setPieces() {
 
-	}
-
-	private void paintSquare(int i) {
-		// ImageIcon image =
-		// ImagesFactory.getImagen(juego.getBoard().getSquares()[i]);
-		// ((JButton) getBoard().getComponent(i)).setIcon(image);
-		// ((JButton) getBoard().getComponent(i)).setDisabledIcon(image);
 	}
 
 	private Color getColorByIndex(int index) {

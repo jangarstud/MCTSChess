@@ -21,6 +21,7 @@ public class PiecePromotionDialog extends JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
 	private JPanel pnMessage;
 	private JPanel pnPieces;
 	private JButton btBishop;

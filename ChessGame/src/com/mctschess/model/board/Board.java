@@ -16,11 +16,7 @@ import com.mctschess.model.pieces.PieceFactory;
 
 public class Board implements IBoard {
 	public static final int BOARD_DIMENSION = 8;
-	
-	//	private final Map<Location, Square> boardState;
-	
-	//	Square[][] boardSquares = new Square[BOARD_DIMENSION][BOARD_DIMENSION];
-	
+		
 	private final Map<Location, Piece> boardState = new HashMap<>();
 	private PieceColor currentColor;
 
@@ -33,29 +29,9 @@ public class Board implements IBoard {
 	private boolean blackKingsideCastling; // Right
 
 	private boolean checkingIsOnCheck = false;
-	
-	/*
-	 * private final List<Piece> whitePieces = new ArrayList<Piece>();
-	 * private final List<Piece> blackPieces = new ArrayList<Piece>();
-	 */
 
 	private Board() {
-		/*
-		 * boardState = new HashMap<Location, Square>();
-		 * Map<Location, Piece> pieces = PieceFactory.initializer();
-		 * for (int rank = 0; rank < boardSquares.length; rank++) { 
-		 *		int column = 0;
-		 *		SquareColor currentColor = (rank % 2 == 1) ? SquareColor.LIGHT : SquareColor.DARK;
-		 *
-		 * 		for (File file : File.values()) {
-		 * 	  		Square newSquare = new Square(currentColor, new Location(file, rank));
-		 * 		  	storeBlackAndWhitePieces(pieces, newSquare); 
-		 * 			boardSquares[rank][column] = newSquare;
-		 * 			currentColor = (currentColor == SquareColor.DARK) ? SquareColor.LIGHT : SquareColor.DARK;
-		 * 			column++; 
-		 * 		}
-		 *  }
-		 */
+		
 	}
 
 	private void putPiecesInBoard(PieceColor pieceColor) {
@@ -377,120 +353,6 @@ public class Board implements IBoard {
 		return null;
 	}
 
-	
-	/*
-	  // Whites
-	  
-	  // rooks b.boardState.put(new Location(File.A, 1),
-	  PieceFactory.getRook(PieceColor.WHITE)); 
-	  b.boardState.put(new Location(File.H, 1), PieceFactory.getRook(PieceColor.WHITE));
-	  
-	  // knights b.boardState.put(new Location(File.B, 1),
-	  PieceFactory.getKnight(PieceColor.WHITE)); 
-	  b.boardState.put(new Location(File.G, 1), PieceFactory.getKnight(PieceColor.WHITE));
-	  
-	  // bishops b.boardState.put(new Location(File.C, 1),
-	  PieceFactory.getBishop(PieceColor.WHITE)); b.boardState.put(new
-	  Location(File.F, 1), PieceFactory.getBishop(PieceColor.WHITE));
-	  
-	  // queens b.boardState.put(new Location(File.D, 1),
-	  PieceFactory.getQueen(PieceColor.WHITE));
-	  
-	  // kings b.boardState.put(new Location(File.E, 1),
-	  PieceFactory.getKing(PieceColor.WHITE));
-	  
-	  // pawns b.boardState.put(new Location(File.A, 2),
-	  PieceFactory.getPawn(PieceColor.WHITE));
-	  b.boardState.put(new Location(File.B, 2), PieceFactory.getPawn(PieceColor.WHITE));
-	  b.boardState.put(new Location(File.C, 2), PieceFactory.getPawn(PieceColor.WHITE));
-	  b.boardState.put(new Location(File.D, 2), PieceFactory.getPawn(PieceColor.WHITE));
-	  b.boardState.put(new Location(File.E, 2), PieceFactory.getPawn(PieceColor.WHITE)); 
-	  b.boardState.put(new Location(File.F, 2), PieceFactory.getPawn(PieceColor.WHITE));
-	  b.boardState.put(new Location(File.G, 2), PieceFactory.getPawn(PieceColor.WHITE));
-	  b.boardState.put(new Location(File.H, 2), PieceFactory.getPawn(PieceColor.WHITE));
-	  */	 
-	  
-	
-	/*
-	  // Blacks
-	  
-	  // rooks b.boardState.put(new Location(File.A, 8),
-	  PieceFactory.getRook(PieceColor.BLACK)); 
-	  b.boardState.put(new Location(File.H, 8), PieceFactory.getRook(PieceColor.BLACK));
-	  
-	  // knights b.boardState.put(new Location(File.B, 8),
-	  PieceFactory.getKnight(PieceColor.BLACK)); 
-	  b.boardState.put(new Location(File.G, 8), PieceFactory.getKnight(PieceColor.BLACK));
-	  
-	  // bishops b.boardState.put(new Location(File.C, 8),
-	  PieceFactory.getBishop(PieceColor.BLACK));
-	  b.boardState.put(new Location(File.F, 8), PieceFactory.getBishop(PieceColor.BLACK));
-	  
-	  // queens b.boardState.put(new Location(File.D, 8),
-	  PieceFactory.getQueen(PieceColor.BLACK));
-	  
-	  // kings b.boardState.put(new Location(File.E, 8),
-	  PieceFactory.getKing(PieceColor.BLACK));
-	  
-	  // pawns b.boardState.put(new Location(File.A, 7),
-	  PieceFactory.getPawn(PieceColor.BLACK));
-	  b.boardState.put(new Location(File.B, 7), PieceFactory.getPawn(PieceColor.BLACK));
-	  b.boardState.put(new Location(File.C, 7), PieceFactory.getPawn(PieceColor.BLACK));
-	  b.boardState.put(new Location(File.D, 7), PieceFactory.getPawn(PieceColor.BLACK));
-	  b.boardState.put(new Location(File.E, 7), PieceFactory.getPawn(PieceColor.BLACK));
-	  b.boardState.put(new Location(File.F, 7), PieceFactory.getPawn(PieceColor.BLACK));
-	  b.boardState.put(new Location(File.G, 7), PieceFactory.getPawn(PieceColor.BLACK));
-	  b.boardState.put(new Location(File.H, 7), PieceFactory.getPawn(PieceColor.BLACK));
-	 */
-
-	/*
-	  private void storeBlackAndWhitePieces(Map<Location, AbstractPiece> setOfPieces, Square newSquare) { 
-		  if (setOfPieces.containsKey(newSquare.getLocation())) { 
-			  AbstractPiece piece = setOfPieces.get(newSquare.getLocation()); 
-			  newSquare.setCurrentPiece(piece);
-			  newSquare.setOccupied(true);
-			  piece.setCurrentSquare(newSquare);
-			  if (piece.getColor().equals(PieceColor.BLACK)) {
-				  blackPieces.add(piece);
-				  } 
-			  else {
-				  whitePieces.add(piece);
-				  }
-			  }
-		  }
-	  
-	  public Map<Location, Square> getBoardState() { 
-		  return this.boardState; 
-	  }
-	  
-	  public List<AbstractPiece> getWhitePieces() { 
-		  return this.whitePieces; 
-	  }
-	  
-	  public List<AbstractPiece> getBlackPieces() { 
-		  return this.blackPieces; 
-	  }
-	  
-	  public void printBoard() { 
-		  for (int rank = 0; rank < boardSquares.length; rank++) {
-			  System.out.print(BOARD_DIMENSION - rank + " ");
-			  for (int file = 0; file < boardSquares[rank].length; file++) { 
-				  if (boardSquares[rank][file].isOccupied()) { 
-					  AbstractPiece piece = boardSquares[rank][file].getCurrentPiece();
-					  System.out.print(piece.getType().name().charAt(0) + " "); // Takes the initial of each piece 
-				  }
-				  else { 
-				  // Empty square representation
-					  System.out.print("- "); } } System.out.println(); 
-				  }
-  				System.out.print("  ");
-  				
-		  for (File file : File.values()) {
-			  System.out.print(file.name() + " ");
-		  }
-		  System.out.println();
-	  }
-	 */
 	
 	@Override
 	public String toString() {

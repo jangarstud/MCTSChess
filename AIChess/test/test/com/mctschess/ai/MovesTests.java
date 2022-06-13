@@ -66,7 +66,6 @@ class MovesTests {
 		}
 		assertTrue(board.isKingOnCheck());
 		assertEquals(PieceColor.BLACK, board.getCurrentColor());
-
 	}
 
 }

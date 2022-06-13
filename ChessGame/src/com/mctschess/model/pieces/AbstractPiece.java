@@ -7,7 +7,6 @@ public abstract class AbstractPiece implements Piece{
 	protected PieceType type;
 	public enum PieceColor{WHITE, BLACK};
 	protected PieceColor color;
-	//protected Square currentSquare;
 	
 	public AbstractPiece(PieceColor pieceColor) {
 		this.color = pieceColor;
@@ -21,23 +20,12 @@ public abstract class AbstractPiece implements Piece{
 		return this.color;
 	}
 	
-	/*
-	public Square getCurrentSquare() {
-		return this.currentSquare;
-	}
-	
-	public void setCurrentSquare(Square currentSquare) {
-		this.currentSquare = currentSquare;
-	}
-	*/
-	
 	@Override
 	public String toString() {
 		return "Piece{" +
 			"Type = " + type + '\'' +
 			"; Color = " + color +
 			"}";
-		
 	}
 
 	@Override
@@ -56,8 +44,5 @@ public abstract class AbstractPiece implements Piece{
 		AbstractPiece other = (AbstractPiece) obj;
 		return color == other.color && type == other.type;
 	}
-	
-	
-	
 
 }

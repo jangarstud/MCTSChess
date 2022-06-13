@@ -19,7 +19,7 @@ public class Pawn extends AbstractPiece implements Piece {
 		if (color == PieceColor.WHITE) {
 			Location loc1 = LocationFactory.build(currentLocation, 0, 1);
 			if (boardState.getPieceAt(loc1) == null) {
-				addMoves(currentLocation, moves, loc1, color); // Must add methods for all the cases
+				addMoves(currentLocation, moves, loc1, color);
 				if (currentLocation.getRank() == 2) {
 					Location loc2 = LocationFactory.build(currentLocation, 0, 2);
 					if (boardState.getPieceAt(loc2) == null) {

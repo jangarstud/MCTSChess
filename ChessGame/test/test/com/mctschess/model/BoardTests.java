@@ -84,16 +84,6 @@ class BoardTests {
 			colorToCheck = PieceColor.BLACK;
 			startingRankPosition = Board.BOARD_DIMENSION;
 		}
-
-		/*
-		 * assertFalse(board.isEmpty(new Location(File.C, 1)));
-		 * assertFalse(board.isEmpty(new Location(File.F, 1)));
-		 * 
-		 * assertEquals(PieceColor.WHITE, board.getPieceAt(new Location(File.C, 1)).getColor());
-		 * assertEquals(PieceType.BISHOP, board.getPieceAt(new Location(File.C, 1)).getType());
-		 * assertEquals(PieceColor.WHITE, board.getPieceAt(new Location(File.F, 1)).getColor());
-		 * assertEquals(PieceType.BISHOP, board.getPieceAt(new Location(File.F, 1)).getType());
-		 */
 	}
 	
 	@Test
@@ -110,6 +100,5 @@ class BoardTests {
 		for (Move move: moves) System.out.println(move);
 		assertEquals(3, moves.size());
 	}
-
 
 }
