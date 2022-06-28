@@ -72,6 +72,10 @@ public class Board implements IBoard {
 
 		return b;
 	}
+	
+	public static Board createBoardCase(LocationAndPiece... locationAndPieces) {
+		return createWithPieces(PieceColor.WHITE, null, false, false, false, false, locationAndPieces);
+	}
 
 	public static Board createWithPieces(LocationAndPiece... locationAndPieces) {
 		return createWithPieces(PieceColor.WHITE, null, true, true, true, true, locationAndPieces);
@@ -352,7 +356,7 @@ public class Board implements IBoard {
 		
 		return null;
 	}
-
+	
 	
 	@Override
 	public String toString() {

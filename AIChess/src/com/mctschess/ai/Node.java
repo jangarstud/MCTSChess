@@ -1,12 +1,15 @@
 package com.mctschess.ai;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.mctschess.model.board.IBoard;
 import com.mctschess.model.location.Move;
 
 public class Node {
+	
 	private IBoard board;
 	private Move move;
 	private int n;
@@ -30,7 +33,7 @@ public class Node {
 			return 0;
 		
 		if (n == 0)
-			return 0;
+			return Double.POSITIVE_INFINITY;
 
 		double V = (double) totalRewards / n;
 		double N = parent.n;
@@ -57,6 +60,23 @@ public class Node {
 		}
 		return bestChild;
 	}
+	
+	public Node getWorstChild() {
+		double worstUCB = Double.POSITIVE_INFINITY;
+		Node worstChild = null;
+		for (Node child : children) {
+			double currentUCB = child.calculateUCB();
+			if (currentUCB <= worstUCB) {
+				worstChild = child;
+				worstUCB = currentUCB;
+			}
+		}
+		return worstChild;
+	}
+
+	public Node getRandomChild() {
+		return children.get(MCTS.random.nextInt(children.size()));
+	}
 
 	public Node getFirstChild() {
 		return children.get(0);
@@ -66,12 +86,13 @@ public class Node {
 		return this.parent;
 	}
 
-	public void expand() {
+	public int expand() {
 		List<Move> availableMoves = board.getValidMoves();
 		children = new ArrayList<Node>();
 		for (Move expandedMove : availableMoves) {
 			children.add(new Node(this, board.applyMove(expandedMove), expandedMove));
 		}
+		return children.size();
 	}
 
 	public void updateUCBParams(int result) {
@@ -85,6 +106,14 @@ public class Node {
 
 	public Move getMove() {
 		return move;
+	}
+	
+	public String getChildrenUCB() {
+		return children.stream()
+				.map(c -> c.calculateUCB())
+				.sorted(Comparator.reverseOrder())
+				.map(c -> String.format("%.4f", c))
+				.collect(Collectors.joining(" - "));
 	}
 
 }
