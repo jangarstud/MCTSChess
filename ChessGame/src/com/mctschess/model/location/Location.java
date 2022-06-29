@@ -2,6 +2,7 @@ package com.mctschess.model.location;
 
 import java.util.Objects;
 
+import com.mctschess.dto.LocationDto;
 import com.mctschess.model.pieces.AbstractPiece.PieceColor;
 
 public class Location {
@@ -70,5 +71,13 @@ public class Location {
 	@Override
 	public String toString() {
 		return "Location{" + "File = " + file + "; Rank = " + rank + "}";
+	}
+	
+	public LocationDto toDto() {
+		return new LocationDto(file, rank);
+	}
+	
+	public static Location fromDto(LocationDto dto) {
+		return new Location(dto.getFile(), dto.getRank());
 	}
 }

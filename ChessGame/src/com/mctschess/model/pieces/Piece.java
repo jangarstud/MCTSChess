@@ -2,6 +2,7 @@ package com.mctschess.model.pieces;
 
 import java.util.List;
 
+import com.mctschess.dto.PieceDto;
 import com.mctschess.model.board.Board;
 import com.mctschess.model.location.Location;
 import com.mctschess.model.location.Move;
@@ -13,4 +14,5 @@ public interface Piece {
 	PieceColor getColor();
 	PieceType getType();
 	void getValidMoves(Board boardState, Location currentLocation, List<Move> moves);
+	PieceDto toDto();
 }

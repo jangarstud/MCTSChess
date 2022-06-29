@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mctschess.dto.BoardDto;
+import com.mctschess.dto.LocationAndPieceDto;
 import com.mctschess.model.location.Location;
 import com.mctschess.model.location.Location.File;
 import com.mctschess.model.location.LocationAndPiece;
@@ -18,20 +20,25 @@ public class Board implements IBoard {
 	public static final int BOARD_DIMENSION = 8;
 		
 	private final Map<Location, Piece> boardState = new HashMap<>();
-	private PieceColor currentColor;
+	private final PieceColor currentColor;
 
-	private File enPassant;
+	private final File enPassant;
 
-	private boolean whiteQueensideCastling; // Left
-	private boolean whiteKingsideCastling; // Right
+	private final boolean whiteQueensideCastling; // Left
+	private final boolean whiteKingsideCastling; // Right
 
-	private boolean blackQueensideCastling; // Left
-	private boolean blackKingsideCastling; // Right
+	private final boolean blackQueensideCastling; // Left
+	private final boolean blackKingsideCastling; // Right
 
 	private boolean checkingIsOnCheck = false;
 
-	private Board() {
-		
+	private Board(PieceColor currentColor, File enPassant, boolean whiteQueensideCastling, boolean whiteKingsideCastling, boolean blackQueensideCastling, boolean blackKingsideCastling ) {
+		this.currentColor = currentColor;
+		this.enPassant = enPassant;
+		this.whiteKingsideCastling = whiteKingsideCastling;
+		this.whiteQueensideCastling = whiteQueensideCastling;
+		this.blackKingsideCastling = blackKingsideCastling;
+		this.blackQueensideCastling = blackQueensideCastling;
 	}
 
 	private void putPiecesInBoard(PieceColor pieceColor) {
@@ -58,17 +65,10 @@ public class Board implements IBoard {
 	}
 
 	public static Board createOnInitState() {
-		Board b = new Board();
-		b.currentColor = PieceColor.WHITE;
+		Board b = new Board(PieceColor.WHITE, null, true, true, true, true);
 
 		b.putPiecesInBoard(PieceColor.WHITE);
 		b.putPiecesInBoard(PieceColor.BLACK);
-
-		b.enPassant = null;
-		b.blackKingsideCastling = true;
-		b.blackQueensideCastling = true;
-		b.whiteKingsideCastling = true;
-		b.whiteQueensideCastling = true;
 
 		return b;
 	}
@@ -96,18 +96,11 @@ public class Board implements IBoard {
 	public static Board createWithPieces(PieceColor currentColor, File enPassant, boolean blackKingsideCastling,
 			boolean blackQueensideCastling, boolean whiteKingsideCastling, boolean whiteQueensideCastling,
 			LocationAndPiece... locationAndPieces) {
-		Board b = new Board();
+		Board b = new Board(currentColor, enPassant, whiteKingsideCastling, whiteQueensideCastling, blackKingsideCastling, blackQueensideCastling);
 
 		for (LocationAndPiece piece : locationAndPieces) {
 			b.boardState.put(piece.getLocation(), piece.getPiece());
 		}
-
-		b.currentColor = currentColor;
-		b.blackKingsideCastling = blackKingsideCastling;
-		b.blackQueensideCastling = blackQueensideCastling;
-		b.whiteKingsideCastling = whiteKingsideCastling;
-		b.whiteQueensideCastling = whiteQueensideCastling;
-		b.enPassant = enPassant;
 
 		return b;
 	}
@@ -386,6 +379,23 @@ public class Board implements IBoard {
 		boardString += "\n";
 		
 		return boardString;
+	}
+	
+	public BoardDto toDto() {
+		List<LocationAndPieceDto> dtoBoardState = boardState.entrySet().stream()
+				.map(entry -> new LocationAndPieceDto(entry.getKey().toDto(), entry.getValue().toDto()))
+				.toList();
+		
+		return new BoardDto(dtoBoardState, currentColor, enPassant, whiteQueensideCastling, whiteKingsideCastling, blackQueensideCastling, blackKingsideCastling);		
+	}
+	
+	public static Board fromDto(BoardDto dto) {
+		
+		LocationAndPiece [] boardState = dto.getBoardState().stream()
+				.map(lp -> LocationAndPiece.fromDto(lp))
+				.toArray((s) -> new LocationAndPiece[s]);
+		
+		return Board.createWithPieces(dto.getCurrentColor(), dto.getEnPassant(), dto.isBlackKingsideCastling(), dto.isBlackQueensideCastling(), dto.isWhiteKingsideCastling(), dto.isWhiteQueensideCastling(), boardState);
 	}
 
 }

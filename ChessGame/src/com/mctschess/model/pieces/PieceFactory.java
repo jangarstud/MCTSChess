@@ -1,5 +1,6 @@
 package com.mctschess.model.pieces;
 
+import com.mctschess.dto.PieceDto;
 import com.mctschess.model.pieces.AbstractPiece.PieceColor;
 
 public class PieceFactory {
@@ -58,5 +59,21 @@ public class PieceFactory {
 	public static AbstractPiece getPawn(PieceColor color) {
 		return pawns[color.ordinal()];
 	}
+	
+	public static Piece fromDto(PieceDto dto) {
+		
+		if (dto == null) return null;
+		
+		switch (dto.getType()) {
+		case BISHOP: return getBishop(dto.getColor());
+		case KING: return getKing(dto.getColor());
+		case NKNIGHT: return getKnight(dto.getColor());
+		case PAWN: return getPawn(dto.getColor());
+		case QUEEN: return getQueen(dto.getColor());
+		case ROOK: return getRook(dto.getColor());
+		default: throw new RuntimeException("Piece was not recognized");
+		}
+	}
+
 	
 }

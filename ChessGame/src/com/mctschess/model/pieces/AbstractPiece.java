@@ -2,6 +2,8 @@ package com.mctschess.model.pieces;
 
 import java.util.Objects;
 
+import com.mctschess.dto.PieceDto;
+
 public abstract class AbstractPiece implements Piece{
 	public enum PieceType{ROOK, NKNIGHT, BISHOP, QUEEN, KING, PAWN}; //KNIGHT starts with an 'N' to differentiate itself from the KING
 	protected PieceType type;
@@ -44,5 +46,11 @@ public abstract class AbstractPiece implements Piece{
 		AbstractPiece other = (AbstractPiece) obj;
 		return color == other.color && type == other.type;
 	}
+	
+	@Override
+	public PieceDto toDto() {
+		return new PieceDto(color, type);
+	}
+
 
 }

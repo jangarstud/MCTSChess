@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mctschess.dto.BoardDto;
 import com.mctschess.gui.panels.PiecePromotionDialog;
 import com.mctschess.model.board.Board;
 import com.mctschess.model.board.IBoard;
@@ -50,6 +53,16 @@ public class BoardVM {
 	public void reset() {
 		currentBoard = Board.createOnInitState();
 		updateSquares();
+		
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			String json = mapper.writeValueAsString(currentBoard.toDto());
+			System.out.println(json);
+			currentBoard = Board.fromDto( mapper.readValue(json, BoardDto.class));
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private Location createLocationFromIndex(int index) {

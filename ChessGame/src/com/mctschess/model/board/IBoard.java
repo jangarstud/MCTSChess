@@ -2,6 +2,7 @@ package com.mctschess.model.board;
 
 import java.util.List;
 
+import com.mctschess.dto.BoardDto;
 import com.mctschess.model.location.Location;
 import com.mctschess.model.location.Location.File;
 import com.mctschess.model.pieces.AbstractPiece.PieceColor;
@@ -28,4 +29,5 @@ public interface IBoard {
 	
 	boolean isOnDeadPosition();
 
+	BoardDto toDto();
 }

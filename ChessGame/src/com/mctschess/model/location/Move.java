@@ -3,6 +3,8 @@ package com.mctschess.model.location;
 import java.util.Objects;
 
 import com.mctschess.model.pieces.Piece;
+import com.mctschess.model.pieces.PieceFactory;
+import com.mctschess.dto.MoveDto;
 import com.mctschess.model.location.Location.File;
 import com.mctschess.model.pieces.AbstractPiece.PieceColor;
 
@@ -75,8 +77,13 @@ public class Move {
 		return "Move [from=" + from + ", to=" + to + ", promotionPiece=" + promotionPiece + "]";
 	}
 	
-	
+	public static Move fromDto(MoveDto dto) {
+		return new Move(Location.fromDto(dto.getFrom()), Location.fromDto(dto.getTo()), PieceFactory.fromDto(dto.getPromotionPiece()));
+	}
 
+	public MoveDto toDto() {
+		return new MoveDto(from.toDto(), to.toDto(), promotionPiece == null ? null : promotionPiece.toDto());
+	}
 	
 	
 }
