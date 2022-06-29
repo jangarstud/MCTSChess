@@ -1,5 +1,6 @@
 package com.mctschess.ai;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -43,26 +44,31 @@ public class MCTS {
 		int draws = 0;
 		
 		while (true) {
-			loops++;
-			Node nodeToExpand = selection();
-			if (isTimeToThinkFinished())
-				break;
-			Node nodeToRollout = expansion(nodeToExpand);
-			if (isTimeToThinkFinished())
-				break;
-			int evaluation = rollout(nodeToRollout);
-			if (isTimeToThinkFinished())
-				break;
-			if (evaluation != MCTS_UNFINISHED && (!MCTS_IGNORE_DRAWS || evaluation != MCTS_DRAW)) {
-				backPropagate(nodeToRollout, evaluation);
+			try {
+				loops++;
+				Node nodeToExpand = selection();
 				if (isTimeToThinkFinished())
 					break;
+				Node nodeToRollout = expansion(nodeToExpand);
+				if (isTimeToThinkFinished())
+					break;
+				int evaluation = rollout(nodeToRollout);
+				if (isTimeToThinkFinished())
+					break;
+				if (evaluation != MCTS_UNFINISHED && (!MCTS_IGNORE_DRAWS || evaluation != MCTS_DRAW)) {
+					backPropagate(nodeToRollout, evaluation);
+					if (isTimeToThinkFinished())
+						break;
+				}
+				switch (evaluation) {
+				
+				case MCTS_DEFEAT: defeats++; break;
+				case MCTS_DRAW: draws++; break;
+				case MCTS_WIN: wins++; break;
+				}
 			}
-			switch (evaluation) {
-			
-			case MCTS_DEFEAT: defeats++; break;
-			case MCTS_DRAW: draws++; break;
-			case MCTS_WIN: wins++; break;
+			catch (Exception e) {
+				LOG.log(Level.WARNING, "An error has occurred while learning", e);				
 			}
 		}
 		
@@ -123,8 +129,13 @@ public class MCTS {
 	public int rollout(Node nodeToRollout) {
 		IBoard board = nodeToRollout.getBoard();
 		int loops = 0;
+		List<IBoard> boards = new ArrayList<>();
+		try {
+			
 		do {
 			loops ++;
+			//System.out.println(board + "\n");
+			boards.add(board);
 			if (isTimeToThinkFinished())
 				return -1;
 
@@ -145,6 +156,14 @@ public class MCTS {
 				board = getRolloutNextBoard(moves, board);
 			}
 		} while (MCTS_MAX_ROLLOUT_STEPS == -1 || loops < MCTS_MAX_ROLLOUT_STEPS);
+		
+		}
+		catch (Exception e) {
+			System.out.println("\n");
+			for (IBoard b: boards) System.out.println(b);
+			
+			System.out.println("\n");
+		}
 		
 		return MCTS_UNFINISHED;
 	}

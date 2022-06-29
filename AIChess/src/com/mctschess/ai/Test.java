@@ -128,6 +128,7 @@ public class Test {
 	
 	
 	private static void testAllBoardCases(int numberOfTests) {
+		System.out.println("BOARD CASE; N; WIN; LOSE; DRAW; MOVES");
 		for(int i = 0; i < BOARD_CASES_LENGTH; i++) {
 			testBoardCase(numberOfTests, i);
 		}
@@ -135,7 +136,6 @@ public class Test {
 	
 	
 	private static void testBoardCase(int numberOfTests, int boardCaseIndex) {
-		System.out.println("N; WIN; LOSE; DRAW; MOVES");
 		for (int i = 1; i <= numberOfTests; i++) {
 			boolean end = false;
 			int moves = 0;
@@ -155,18 +155,18 @@ public class Test {
 				if (possibleMoves.isEmpty() || board.isOnDeadPosition()) {
 					end = true;
 				} else {
-					board = board.applyMove(possibleMoves.get(0));
+					board = board.applyMove(possibleMoves.get(MCTS.random.nextInt(possibleMoves.size())));
 				}
 			}
 			
-			System.out.printf("%d; %d; %d; %d; %d %n",
+			System.out.printf("%d; %d; %d; %d; %d; %d %n",
+					boardCaseIndex,
 					i,
 					board.isKingOnCheck() && board.getCurrentColor() == PieceColor.BLACK ? 1 : 0,
 					board.isKingOnCheck() && board.getCurrentColor() == PieceColor.WHITE ? 1 : 0,
 					!board.isKingOnCheck() ? 1 : 0,
 					moves);
 		}
-		System.out.println();
 	}
 
 }
