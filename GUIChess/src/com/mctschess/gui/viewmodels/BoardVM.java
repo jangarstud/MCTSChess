@@ -5,11 +5,13 @@ import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mctschess.dto.BoardDto;
+import javax.swing.JOptionPane;
+
 import com.mctschess.gui.panels.PiecePromotionDialog;
+import com.mctschess.gui.wsclient.WSClient;
 import com.mctschess.model.board.Board;
 import com.mctschess.model.board.IBoard;
 import com.mctschess.model.location.Location;
@@ -22,10 +24,17 @@ import com.mctschess.model.pieces.PieceFactory;
 public class BoardVM {
 
 	private PropertyChangeSupport pCS = new PropertyChangeSupport(this);
+	
+	private WSClient wsClient = new WSClient();
 
 	private static final Map<Piece, String> IMAGES_FOR_PIECE;
 	private SquareState squares[] = new SquareState[64];
 	private IBoard currentBoard;
+	
+	private PieceColor aiColor = null;
+	
+	private long whiteTime;
+	private long blackTime;
 
 	static {
 		IMAGES_FOR_PIECE = new HashMap<Piece, String>();
@@ -47,22 +56,31 @@ public class BoardVM {
 		for (int i = 0; i < squares.length; i++) {
 			squares[i] = new SquareState();
 		}
-		reset();
+		reset(PieceColor.WHITE, true);
+		
+		new Timer().schedule( new TimerTask() {
+			
+			@Override
+			public void run() {
+				calculateNewTime();				
+			}
+		}, 1000, 1000);
 	}
 
-	public void reset() {
+	public void reset(PieceColor playerColor, boolean aiPlaying) {
 		currentBoard = Board.createOnInitState();
+		whiteTime = 0;
+		blackTime = 0;
 		updateSquares();
-		
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			String json = mapper.writeValueAsString(currentBoard.toDto());
-			System.out.println(json);
-			currentBoard = Board.fromDto( mapper.readValue(json, BoardDto.class));
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (aiPlaying) {
+			
+			aiColor = playerColor == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
 		}
+		else aiColor = null;
+
+		if (aiColor == PieceColor.WHITE) 
+			wsClient.play(currentBoard)
+				.thenAccept(this::makeAIMove);
 	}
 
 	private Location createLocationFromIndex(int index) {
@@ -108,8 +126,70 @@ public class BoardVM {
 			}
 		}
 	}
+	
+	private boolean checkEndGame() {
+		if (currentBoard.isOnDeadPosition()) {
+			JOptionPane.showMessageDialog(null, "The match has finished with a draw (insufficient material - dead position)");
+			return true;			
+		}
+		else if (currentBoard.getValidMoves().isEmpty()) {
+			if (currentBoard.isKingOnCheck()) {
+				if (currentBoard.getCurrentColor() == PieceColor.WHITE) {
+					JOptionPane.showMessageDialog(null, "The match has finished. Black wins");
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "The match has finished. White wins");
+				}
+			}
+			else {
+				JOptionPane.showMessageDialog(null, "The match has finished with a draw (stalemate)");
+			}
+			return true;
+		}
+		else return false;
+	}
+	
+	private void calculateNewTime() {
+		if (currentBoard.getCurrentColor() == PieceColor.WHITE) {
+			whiteTime ++;
+			pCS.firePropertyChange("whiteTime", whiteTime - 1, whiteTime);
+		}
+		else {
+			blackTime ++;
+			pCS.firePropertyChange("blackTime", blackTime - 1, blackTime);
+		}
+	}
+	
+	private void makeUserMove(Move move) {
+		calculateNewTime();
+		
+		currentBoard = currentBoard.applyMove(move);
+		updateSquares();
+		
+		if (!checkEndGame()) {
+			if (aiColor != null)
+				wsClient.play(currentBoard)
+					.thenAccept(this::makeAIMove);
+		}	
+	}
+	
+	private void makeAIMove(Move move) {
+		if (move != null) {
+			calculateNewTime();
+			
+			currentBoard = currentBoard.applyMove(move);
+			updateSquares();
+			checkEndGame();
+		}
+		else {
+			JOptionPane.showMessageDialog(null, "Server error");
+		}
+	}
+	
 
 	public void clickOnSquare(int i) {
+		
+		if (aiColor == currentBoard.getCurrentColor())  return;
 
 		int selectedIndex = -1;
 		for (int j = 0; j < squares.length; j++) {
@@ -130,9 +210,7 @@ public class BoardVM {
 					&& i / 8 == 7) {
 				promotionPiece = showPromotionDialog(currentColor);
 			}
-			currentBoard = currentBoard
-					.applyMove(new Move(createLocationFromIndex(selectedIndex), createLocationFromIndex(i), promotionPiece));
-			updateSquares();
+			makeUserMove(new Move(createLocationFromIndex(selectedIndex), createLocationFromIndex(i), promotionPiece));
 		} else {
 			if (!squares[i].isEmpty() && isCurrentColorSelected) {
 				unselect();

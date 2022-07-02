@@ -26,13 +26,14 @@ public class BoardPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private BoardVM boardVM = new BoardVM();
+	private BoardVM boardVM;
 	private JPanel squares[] = new JPanel[64];
 
 	/**
 	 * Create the panel.
 	 */
-	public BoardPanel() {
+	public BoardPanel(BoardVM boardVM) {
+		this.boardVM = boardVM;
 		setLayout(new GridBagLayout());
 		setRanksAndFiles();
 		setBoard();

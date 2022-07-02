@@ -39,7 +39,7 @@ public class King extends AbstractPiece implements Piece {
 		Location loc1 = LocationFactory.build(currentLocation, 1, 0);
 		Location toKingside = LocationFactory.build(currentLocation, 2, 0);
 		
-		if (!boardState.isCurrentKingsideCastling()) return;
+		if (!boardState.isKingsideCastling(color)) return;
 
 		if (boardState.isOnCheck(currentLocation)) return;
 		if (!boardState.isEmpty(loc1) || boardState.isOnCheck(loc1)) return;
@@ -53,7 +53,7 @@ public class King extends AbstractPiece implements Piece {
 		Location toQueenside = LocationFactory.build(currentLocation, -2, 0);
 		Location loc2 = LocationFactory.build(currentLocation, -3, 0);
 		
-		if (!boardState.isCurrentQueensideCastling()) return;
+		if (!boardState.isQueensideCastling(color)) return;
 		
 		if (boardState.isOnCheck(currentLocation)) return;
 		if (!boardState.isEmpty(loc1) || boardState.isOnCheck(loc1)) return;

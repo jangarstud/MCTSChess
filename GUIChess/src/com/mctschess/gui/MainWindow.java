@@ -5,11 +5,15 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
@@ -18,36 +22,39 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.mctschess.gui.panels.BoardPanel;
+import com.mctschess.gui.viewmodels.BoardVM;
+import com.mctschess.model.pieces.AbstractPiece.PieceColor;
 
-public class MainWindow extends JFrame {
+public class MainWindow extends JFrame implements PropertyChangeListener {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private JPanel contentPane;
-	private JMenuBar menuBar;
+	private JMenuBar mwMenuBar;
 	private JMenu mnGame;
 	private JMenuItem mntmNew;
 	private JSeparator separator;
 	private JMenuItem mntmExit;
 	private JMenu mnMode;
-	private JRadioButtonMenuItem rdbtnmntmMachine;
+	private ButtonGroup modeRdbuttonsGroup;
+	private JRadioButtonMenuItem rdbtnmntmAI;
 	private JRadioButtonMenuItem rdbtnmntm1vs1;
-	private JMenu mnHelp;
-	private JMenuItem mntmAbout;
-	private JSeparator separator_1;
-	private JMenuItem mntmContent;
 	private JPanel pnTimers;
 	private JTextField txTimer1;
 	private JTextField txTimer2;
 	private BoardPanel boardPanel;
+	
+	private BoardVM boardVM;
+	
+	private boolean aiPlaying;
 
 	/**
 	 * Create the frame.
 	 */
 	public MainWindow() {
+		this.boardVM = new BoardVM();		
+		this.boardVM.addPropertyChangeListener(this);
+		
 		initialize();
 
 		setIconImage(Toolkit.getDefaultToolkit()
@@ -56,7 +63,7 @@ public class MainWindow extends JFrame {
 		setTitle("MCTS Chess");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 700);
-		setJMenuBar(getMenuBar_1());
+		setJMenuBar(getMWMenuBar());
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -66,18 +73,32 @@ public class MainWindow extends JFrame {
 		setLocationRelativeTo(null);
 	}
 
+	private void initalizeTimeCounters() {
+		getTxWhiteTimer().setText("00:00");
+		getTxBlackTimer().setText("00:00");
+	}
+	
+	private void initializeModeRdbtns(boolean aiPlayingSelected) {
+		getRdbtnmntmAI().setSelected(aiPlayingSelected);
+		getRdbtnmntm1vs1().setSelected(!aiPlayingSelected);
+	}
+	
 	private void initialize() {
+		aiPlaying = true;
+		initalizeTimeCounters();
+		initializeModeRdbtns(aiPlaying);
+		
+		boardVM.reset(PieceColor.WHITE, aiPlaying);
 		validate();
 	}
 
-	private JMenuBar getMenuBar_1() {
-		if (menuBar == null) {
-			menuBar = new JMenuBar();
-			menuBar.add(getMnGame());
-			menuBar.add(getMnMode());
-			menuBar.add(getMnHelp());
+	private JMenuBar getMWMenuBar() {
+		if (mwMenuBar == null) {
+			mwMenuBar = new JMenuBar();
+			mwMenuBar.add(getMnGame());
+			mwMenuBar.add(getMnMode());
 		}
-		return menuBar;
+		return mwMenuBar;
 	}
 
 	private JMenu getMnGame() {
@@ -128,77 +149,79 @@ public class MainWindow extends JFrame {
 		if (mnMode == null) {
 			mnMode = new JMenu("Mode");
 			mnMode.setMnemonic('M');
-			mnMode.add(getRdbtnmntmMachine());
+			modeRdbuttonsGroup = new ButtonGroup();
+			modeRdbuttonsGroup.add(getRdbtnmntmAI());
+			modeRdbuttonsGroup.add(getRdbtnmntm1vs1());
+			mnMode.add(getRdbtnmntmAI());
 			mnMode.add(getRdbtnmntm1vs1());
 		}
 		return mnMode;
 	}
 
-	private JRadioButtonMenuItem getRdbtnmntmMachine() {
-		if (rdbtnmntmMachine == null) {
-			rdbtnmntmMachine = new JRadioButtonMenuItem("Machine");
-			rdbtnmntmMachine.setMnemonic('M');
+	private JRadioButtonMenuItem getRdbtnmntmAI() {
+		if (rdbtnmntmAI == null) {
+			rdbtnmntmAI = new JRadioButtonMenuItem("AI");
+			rdbtnmntmAI.setSelected(true);
+			String[] playerOptions = new String[] {"White", "Black", "Cancel"};
+			rdbtnmntmAI.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					int selectedOption = 0;
+					selectedOption = JOptionPane.showOptionDialog(null, "Player color: ", "Player color selection", JOptionPane.DEFAULT_OPTION,  JOptionPane.QUESTION_MESSAGE, null, playerOptions, playerOptions[0]);
+					// WHITE
+					if(selectedOption == 0) {
+						aiPlaying = true;
+						initalizeTimeCounters();
+						boardVM.reset(PieceColor.WHITE, true);
+					} 
+					// BLACK
+					else if(selectedOption == 1) {
+						aiPlaying = true;
+						initalizeTimeCounters();
+						boardVM.reset(PieceColor.BLACK, true);
+					} 
+					// Cancel
+					else {
+						JOptionPane.getRootFrame().dispose();
+						initializeModeRdbtns(aiPlaying);
+					}
+				}
+			});
+			rdbtnmntmAI.setMnemonic('A');
 		}
-		return rdbtnmntmMachine;
+		return rdbtnmntmAI;
 	}
 
 	private JRadioButtonMenuItem getRdbtnmntm1vs1() {
 		if (rdbtnmntm1vs1 == null) {
 			rdbtnmntm1vs1 = new JRadioButtonMenuItem("1vs1");
+			rdbtnmntm1vs1.setSelected(false);
+			rdbtnmntm1vs1.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					aiPlaying = false;
+					initalizeTimeCounters();
+					boardVM.reset(PieceColor.WHITE, false);
+				}
+			});
 			rdbtnmntm1vs1.setMnemonic('S');
 		}
 		return rdbtnmntm1vs1;
-	}
-
-	private JMenu getMnHelp() {
-		if (mnHelp == null) {
-			mnHelp = new JMenu("Help");
-			mnHelp.setMnemonic('H');
-			mnHelp.add(getMntmAbout());
-			mnHelp.add(getSeparator_1());
-			mnHelp.add(getMntmContent());
-		}
-		return mnHelp;
-	}
-
-	private JMenuItem getMntmAbout() {
-		if (mntmAbout == null) {
-			mntmAbout = new JMenuItem("About");
-			mntmAbout.setMnemonic('A');
-		}
-		return mntmAbout;
-	}
-
-	private JSeparator getSeparator_1() {
-		if (separator_1 == null) {
-			separator_1 = new JSeparator();
-		}
-		return separator_1;
-	}
-
-	private JMenuItem getMntmContent() {
-		if (mntmContent == null) {
-			mntmContent = new JMenuItem("Content");
-			mntmContent.setMnemonic('C');
-		}
-		return mntmContent;
 	}
 
 	private JPanel getPnTimers() {
 		if (pnTimers == null) {
 			pnTimers = new JPanel();
 			pnTimers.setLayout(new BorderLayout(0, 0));
-			pnTimers.add(getTxTimer1(), BorderLayout.NORTH);
-			pnTimers.add(getTxTimer2(), BorderLayout.SOUTH);
+			pnTimers.add(getTxBlackTimer(), BorderLayout.NORTH);
+			pnTimers.add(getTxWhiteTimer(), BorderLayout.SOUTH);
 		}
 		return pnTimers;
 	}
 
-	private JTextField getTxTimer1() {
+	private JTextField getTxBlackTimer() {
 		if (txTimer1 == null) {
 			txTimer1 = new JTextField();
 			txTimer1.setHorizontalAlignment(SwingConstants.CENTER);
-			txTimer1.setText("5:00");
+			txTimer1.setText("00:00");
 			txTimer1.setEditable(false);
 			txTimer1.setFont(new Font("Tahoma", Font.BOLD, 14));
 			txTimer1.setColumns(6);
@@ -206,11 +229,11 @@ public class MainWindow extends JFrame {
 		return txTimer1;
 	}
 
-	private JTextField getTxTimer2() {
+	private JTextField getTxWhiteTimer() {
 		if (txTimer2 == null) {
 			txTimer2 = new JTextField();
 			txTimer2.setHorizontalAlignment(SwingConstants.CENTER);
-			txTimer2.setText("5:00");
+			txTimer2.setText("00:00");
 			txTimer2.setEditable(false);
 			txTimer2.setFont(new Font("Tahoma", Font.BOLD, 14));
 			txTimer2.setColumns(6);
@@ -220,8 +243,25 @@ public class MainWindow extends JFrame {
 
 	private BoardPanel getBoardPanel() {
 		if (boardPanel == null) {
-			boardPanel = new BoardPanel();
+			boardPanel = new BoardPanel(boardVM);
 		}
 		return boardPanel;
+	}
+	
+	private String millisecondsToTime(long time) {
+		long seconds = time % 60;
+		long minutes = time / 60;
+		return String.format("%02d:%02d", minutes, seconds);
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (evt.getPropertyName().equals("whiteTime")) 
+		{
+			getTxWhiteTimer().setText(millisecondsToTime((Long)evt.getNewValue())); 
+		}
+		else if (evt.getPropertyName().equals("blackTime")) {
+			getTxBlackTimer().setText(millisecondsToTime((Long)evt.getNewValue()));
+		}
 	}
 }

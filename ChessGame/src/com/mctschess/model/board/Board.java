@@ -130,7 +130,12 @@ public class Board implements IBoard {
 		}
 		checkingIsOnCheck = false;
 
-		return validMoves.stream().anyMatch((move) -> move.getTo().equals(location));
+		return validMoves.stream().anyMatch((move) -> 
+		{
+//			System.out.println(move);
+			return move.getTo().equals(location);	
+		}
+		);
 	}
 
 	private Location getCurrentKingLocation() {
@@ -292,12 +297,12 @@ public class Board implements IBoard {
 		return enPassant == file;
 	}
 
-	public boolean isCurrentQueensideCastling() {
-		return currentColor == PieceColor.WHITE ? whiteQueensideCastling : blackQueensideCastling;
+	public boolean isQueensideCastling(PieceColor color) {
+		return color == PieceColor.WHITE ? whiteQueensideCastling : blackQueensideCastling;
 	}
 
-	public boolean isCurrentKingsideCastling() {
-		return currentColor == PieceColor.WHITE ? whiteKingsideCastling : blackKingsideCastling;
+	public boolean isKingsideCastling(PieceColor color) {
+		return color == PieceColor.WHITE ? whiteKingsideCastling : blackKingsideCastling;
 	}
 	
 	public PieceColor getCurrentColor() {

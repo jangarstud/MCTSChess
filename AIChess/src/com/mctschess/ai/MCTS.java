@@ -68,7 +68,8 @@ public class MCTS {
 				}
 			}
 			catch (Exception e) {
-				LOG.log(Level.WARNING, "An error has occurred while learning", e);				
+				LOG.log(Level.WARNING, "An error has occurred while learning", e);	
+				e.printStackTrace();
 			}
 		}
 		

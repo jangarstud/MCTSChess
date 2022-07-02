@@ -26,7 +26,6 @@ public class GameController {
 		MCTS mcts = new MCTS(board);
 		mcts.learn(1000);
 		Move move = mcts.selectBestMove();
-		
 		return move.toDto();
 	}
 }
